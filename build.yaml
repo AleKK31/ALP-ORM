@@ -1,0 +1,22 @@
+targets:
+  $default:
+    sources:
+      - "lib/**"
+      - "test/example/**"  # Inclui a pasta de exemplos
+    builders:
+      dart_supabase_orm|orm_builder:
+        enabled: true
+        generate_for:
+          include:
+            - lib/**/*.dart
+            - "test/example/**.dart"
+
+builders:
+  orm_builder:
+    target: ":dart_supabase_orm"
+    import: "package:dart_supabase_orm/src/builder/orm_generator.dart"
+    builder_factories: ["ormBuilder"]
+    build_extensions: {".dart": [".g.dart"]}
+    auto_apply: dependents
+    applies_builders: ["source_gen|combining_builder"]
+    build_to: source

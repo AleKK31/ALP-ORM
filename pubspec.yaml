@@ -1,0 +1,22 @@
+name: dart_supabase_orm
+description: A sample command-line application.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.7.3
+
+# Add regular dependencies here.
+dependencies:
+  # path: ^1.8.0
+  supabase: ^2.0.0
+  meta: ^1.8.0
+  equatable: ^2.0.5
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.24.0
+  build_runner: ^2.3.3
+  source_gen: ^2.0.0
+  analyzer: ^7.4.5
+  dart_style: ^3.0.1

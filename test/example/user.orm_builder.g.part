@@ -1,0 +1,41 @@
+// **************************************************************************
+// OrmGenerator
+// **************************************************************************
+
+// @dart=3.0
+import 'package:supabase/supabase.dart';
+import 'file:///home/alexandre/Documentos/UTF/LP/dart_supabase_orm/test/example/user.dart';
+
+class AppUserRepository {
+  final SupabaseClient _client;
+  AppUserRepository(this._client);
+
+  Future<AppUser?> findById(dynamic id) async {
+    final data = await _client.from('users').select().eq('id', id).single();
+    return data != null ? AppUser.fromJson(data as Map<String, dynamic>) : null;
+  }
+
+  Future<List<AppUser>> findAll() async {
+    final data = await _client.from('users').select();
+    return (data as List)
+        .map<AppUser>((e) => AppUser.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<AppUser> insert(AppUser entity) async {
+    final data =
+        await _client.from('users').insert(entity.toJson()).select().single();
+    return AppUser.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<void> delete(dynamic id) async {
+    await _client.from('users').delete().eq('id', id);
+  }
+
+  Stream<List<AppUser>> subscribeToChanges() {
+    return _client.from('users').stream(primaryKey: ['id']).map((data) =>
+        (data as List)
+            .map<AppUser>((e) => AppUser.fromJson(e as Map<String, dynamic>))
+            .toList());
+  }
+}
