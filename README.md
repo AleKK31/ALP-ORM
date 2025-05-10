@@ -55,3 +55,7 @@ dart run build_runner build --delete-conflicting-outputs
 ```bash
 dart run test/dart_supabase_orm_test.dart
 ```
+
+---
+
+[Notion](https://www.notion.so/ORM-DART-1ee66b19d44e8020add5f90a4dae8703)
