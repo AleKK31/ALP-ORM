@@ -15,16 +15,16 @@ void main() async {
   final userRepo = AppUserRepository(orm.client);
 
   // 3. Teste as operações CRUD
-  print('=== TESTE DO ORM ===');
+  print('===== TESTE DO ORM =====');
 
   // CREATE
   final newUser = await userRepo.insert(
-    AppUser(name: 'Test User', email: 'test@example.com'),
+    AppUser(name: 'Test user', email: 'test@example.com'),
   );
-  print('User criado: ${newUser.name}');
+  print('User criado: ${newUser.name} ${newUser.id}');
 
   // READ
-  final fetchedUser = await userRepo.findById(1);
+  final fetchedUser = await userRepo.findById(newUser.id);
   print('User recuperado: ${fetchedUser?.email}');
 
   final allUsers = await userRepo.findAll();
@@ -40,6 +40,10 @@ void main() async {
   });
 
   // DELETE
-  await userRepo.delete(1);
+  await userRepo.delete(newUser.id);
   print('User deletado');
+
+  print('=== TESTE FINALIZADO ===');
+
+  return;
 }
