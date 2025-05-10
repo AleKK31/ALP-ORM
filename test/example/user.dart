@@ -22,6 +22,6 @@ class AppUser {
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'user_name': name, 'email': email};
+    return {'user_name': name, 'email': email};
   }
 }
