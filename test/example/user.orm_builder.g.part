@@ -4,7 +4,7 @@
 
 // @dart=3.0
 import 'package:supabase/supabase.dart';
-import 'file:///home/alexandre/Documentos/UTF/LP/dart_supabase_orm/test/example/user.dart';
+import 'user.dart';
 
 class AppUserRepository {
   final SupabaseClient _client;

@@ -1,10 +1,8 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:build/src/builder/build_step.dart';
-import 'package:source_gen/source_gen.dart';
-import 'package:dart_style/dart_style.dart';
-import '../annotations.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
+
+import '../annotations.dart';
 
 class OrmGenerator extends GeneratorForAnnotation<Entity> {
   @override
@@ -64,7 +62,7 @@ class OrmGenerator extends GeneratorForAnnotation<Entity> {
     final repositoryCode = '''
       // @dart=3.0
       import 'package:supabase/supabase.dart';
-      import '${element.source!.uri.toFilePath()}'; // Corrigido para usar file path
+      import '${element.source.uri.pathSegments.last}'; 
       
       class ${className}Repository {
         final SupabaseClient _client;
