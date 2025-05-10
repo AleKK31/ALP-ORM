@@ -1,7 +1,7 @@
 import 'package:dart_supabase_orm/dart_supabase_orm.dart';
+
 import 'example/user.dart';
 import 'example/user.orm_builder.g.part';
-import 'example/user.dart';
 
 void main() async {
   // 1. Inicialize o BD do ORM
@@ -19,7 +19,7 @@ void main() async {
 
   // CREATE
   final newUser = await userRepo.insert(
-    AppUser(id: 1, name: 'Test User', email: 'test@example.com'),
+    AppUser(name: 'Test User', email: 'test@example.com'),
   );
   print('User criado: ${newUser.name}');
 

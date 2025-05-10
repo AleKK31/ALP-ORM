@@ -3,7 +3,7 @@ import 'package:dart_supabase_orm/dart_supabase_orm.dart';
 @Entity(tableName: 'users')
 class AppUser {
   @PrimaryKey()
-  final int id;
+  final int? id;
 
   @Column(name: 'user_name')
   final String name;
@@ -11,7 +11,7 @@ class AppUser {
   @Column()
   final String email;
 
-  AppUser({required this.id, required this.name, required this.email});
+  AppUser({this.id, required this.name, required this.email});
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
