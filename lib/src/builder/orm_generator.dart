@@ -70,6 +70,7 @@ class OrmGenerator extends GeneratorForAnnotation<Entity> {
         
         ${_generateCrudMethods(className, tableName, fields)}
         ${_generateRealtimeMethods(className, tableName, fields)}
+        ${_generateQueryMethods(className, tableName, fields)}
       }
     ''';
 
@@ -129,6 +130,87 @@ class OrmGenerator extends GeneratorForAnnotation<Entity> {
 
   Builder ormBuilder(BuilderOptions options) {
     return SharedPartBuilder([OrmGenerator()], 'orm_builder');
+  }
+
+  String _generateQueryMethods(
+    String className,
+    String tableName,
+    List<_FieldInfo?> fields,
+  ) {
+    return '''
+    Future<List<${className}>> query({
+      String? select,
+      Map<String, dynamic>? where,
+      String? orderBy,
+      bool? ascending,
+      int? limit,
+      int? offset,
+    }) async {
+      // Criar o builder base com tipo explícito
+      final queryBuilder = _client.from('$tableName').select(select ?? '*');
+      
+      // Aplicar filtros
+      dynamic filteredQuery = queryBuilder;
+      if (where != null) {
+        where.forEach((key, value) {
+          if (value is Map) {
+            value.forEach((operator, opValue) {
+              switch (operator) {
+                case 'neq':
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder).neq(key, opValue);
+                  break;
+                case 'gt':
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder).gt(key, opValue);
+                  break;
+                case 'gte':
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder).gte(key, opValue);
+                  break;
+                case 'lt':
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder).lt(key, opValue);
+                  break;
+                case 'lte':
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder).lte(key, opValue);
+                  break;
+                case 'like':
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder).like(key, opValue);
+                  break;
+                case 'ilike':
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder).ilike(key, opValue);
+                  break;
+                case 'contains':
+                  if (opValue is List) {
+                    filteredQuery = (filteredQuery as PostgrestFilterBuilder).contains(key, opValue);
+                  }
+                  break;
+                default:
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder).eq(key, value);
+              }
+            });
+          } else {
+            filteredQuery = (filteredQuery as PostgrestFilterBuilder).eq(key, value);
+          }
+        });
+      }
+      
+      // Aplicar transformações
+      dynamic finalQuery = filteredQuery;
+      if (orderBy != null) {
+        finalQuery = (finalQuery as PostgrestTransformBuilder).order(orderBy, ascending: ascending ?? true);
+      }
+      
+      if (limit != null) {
+        finalQuery = (finalQuery as PostgrestTransformBuilder).limit(limit);
+      }
+      
+      if (offset != null) {
+        finalQuery = (finalQuery as PostgrestTransformBuilder).range(offset, offset + (limit ?? 100));
+      }
+      
+      final response = await finalQuery;
+      final data = response as List<dynamic>;
+      return data.map<${className}>((json) => ${className}.fromJson(json as Map<String, dynamic>)).toList();
+    }
+  ''';
   }
 }
 

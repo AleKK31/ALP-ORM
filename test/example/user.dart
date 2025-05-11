@@ -5,7 +5,7 @@ class AppUser {
   @PrimaryKey()
   final int? id;
 
-  @Column(name: 'user_name')
+  @Column(name: 'name')
   final String name;
 
   @Column()
@@ -15,13 +15,13 @@ class AppUser {
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
-      id: json['id'] as int,
-      name: json['user_name'] as String,
-      email: json['email'] as String,
+      id: json['id'] as int? ?? 0,
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String? ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'user_name': name, 'email': email};
+    return {'name': name, 'email': email};
   }
 }

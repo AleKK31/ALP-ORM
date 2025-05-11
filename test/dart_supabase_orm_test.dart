@@ -19,13 +19,13 @@ void main() async {
 
   // CREATE
   final newUser = await userRepo.insert(
-    AppUser(name: 'Test user', email: 'test@example.com'),
+    AppUser(name: 'USER NAME', email: 'email@example.com'),
   );
-  print('User criado: ${newUser.name} ${newUser.id}');
+  print('User criado: ${newUser.name} ${newUser.id}\n');
 
   // READ
   final fetchedUser = await userRepo.findById(newUser.id);
-  print('User recuperado: ${fetchedUser?.email}');
+  print('User recuperado: ${fetchedUser?.email}\n');
 
   final allUsers = await userRepo.findAll();
 
@@ -33,15 +33,57 @@ void main() async {
   final updatedUserStream = userRepo.subscribeToChanges();
   updatedUserStream.listen((users) {
     if (users.isNotEmpty) {
-      print('User atualizado: ${users.first.name}');
+      print('User atualizado: ${users.first.name}\n');
     } else {
       print('Nenhum usuário atualizado.');
     }
   });
 
   // DELETE
-  await userRepo.delete(newUser.id);
-  print('User deletado');
+  //await userRepo.delete(newUser.id);
+  //print('User deletado\n');
+
+  // Com Stream
+  final subscription = userRepo.subscribeToChanges().listen((usuarios) {
+    print('Atualização recebida (STREAM): ${usuarios.length} usuários');
+    usuarios.forEach((user) {
+      print('${user.name} - ${user.email}');
+    });
+  });
+
+  // Consulta com filtro LIKE
+  final usersWithExampleEmail = await userRepo.query(
+    where: {
+      'email': {'like': '%@gmail.com%'},
+    },
+  );
+  print('Usuários com email @example.com: ${usersWithExampleEmail.length}\n');
+  print(
+    'Usuários com email @example.com: ${usersWithExampleEmail.map((e) => e.email).toList()}\n',
+  );
+
+  // Ordenar por nome
+  final usuariosOrdenadosNome = await userRepo.query(
+    orderBy: 'name',
+    ascending: true,
+  );
+  print(
+    '\nUsuários ordenados por nome: ${usuariosOrdenadosNome.map((e) => e.name).toList()}\n',
+  );
+
+  final usuarios = await userRepo.query(
+    where: {
+      'name': {'ilike': '%test%'},
+      'email': {'like': '%.com%'},
+    },
+    orderBy: 'name',
+    ascending: true,
+    limit: 5,
+  );
+  print('Usuários encontrados:');
+  usuarios.forEach((user) {
+    print('${user.id} - ${user.name} (${user.email})');
+  });
 
   print('=== TESTE FINALIZADO ===');
 

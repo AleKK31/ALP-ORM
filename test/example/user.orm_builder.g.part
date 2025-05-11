@@ -38,4 +38,91 @@ class AppUserRepository {
             .map<AppUser>((e) => AppUser.fromJson(e as Map<String, dynamic>))
             .toList());
   }
+
+  Future<List<AppUser>> query({
+    String? select,
+    Map<String, dynamic>? where,
+    String? orderBy,
+    bool? ascending,
+    int? limit,
+    int? offset,
+  }) async {
+    // Criar o builder base com tipo explícito
+    final queryBuilder = _client.from('users').select(select ?? '*');
+
+    // Aplicar filtros
+    dynamic filteredQuery = queryBuilder;
+    if (where != null) {
+      where.forEach((key, value) {
+        if (value is Map) {
+          value.forEach((operator, opValue) {
+            switch (operator) {
+              case 'neq':
+                filteredQuery =
+                    (filteredQuery as PostgrestFilterBuilder).neq(key, opValue);
+                break;
+              case 'gt':
+                filteredQuery =
+                    (filteredQuery as PostgrestFilterBuilder).gt(key, opValue);
+                break;
+              case 'gte':
+                filteredQuery =
+                    (filteredQuery as PostgrestFilterBuilder).gte(key, opValue);
+                break;
+              case 'lt':
+                filteredQuery =
+                    (filteredQuery as PostgrestFilterBuilder).lt(key, opValue);
+                break;
+              case 'lte':
+                filteredQuery =
+                    (filteredQuery as PostgrestFilterBuilder).lte(key, opValue);
+                break;
+              case 'like':
+                filteredQuery = (filteredQuery as PostgrestFilterBuilder)
+                    .like(key, opValue);
+                break;
+              case 'ilike':
+                filteredQuery = (filteredQuery as PostgrestFilterBuilder)
+                    .ilike(key, opValue);
+                break;
+              case 'contains':
+                if (opValue is List) {
+                  filteredQuery = (filteredQuery as PostgrestFilterBuilder)
+                      .contains(key, opValue);
+                }
+                break;
+              default:
+                filteredQuery =
+                    (filteredQuery as PostgrestFilterBuilder).eq(key, value);
+            }
+          });
+        } else {
+          filteredQuery =
+              (filteredQuery as PostgrestFilterBuilder).eq(key, value);
+        }
+      });
+    }
+
+    // Aplicar transformações
+    dynamic finalQuery = filteredQuery;
+    if (orderBy != null) {
+      finalQuery = (finalQuery as PostgrestTransformBuilder)
+          .order(orderBy, ascending: ascending ?? true);
+    }
+
+    if (limit != null) {
+      finalQuery = (finalQuery as PostgrestTransformBuilder).limit(limit);
+    }
+
+    if (offset != null) {
+      finalQuery = (finalQuery as PostgrestTransformBuilder)
+          .range(offset, offset + (limit ?? 100));
+    }
+
+    final response = await finalQuery;
+    final data = response as List<dynamic>;
+    return data
+        .map<AppUser>((json) => AppUser.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 }
