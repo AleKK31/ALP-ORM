@@ -29,15 +29,24 @@ void main() async {
 
   final allUsers = await userRepo.findAll();
 
-  // UPDATE
+  // UPDATE - Monitoramento de mudanças
   final updatedUserStream = userRepo.subscribeToChanges();
   updatedUserStream.listen((users) {
     if (users.isNotEmpty) {
-      print('User atualizado: ${users.first.name}\n');
+      print('User atualizado (Uso de Stream): ${users.first.name}\n');
     } else {
       print('Nenhum usuário atualizado.');
     }
   });
+
+  // UPDATE
+  final userUpdate = await userRepo.findById(newUser.id);
+  if (userUpdate != null) {
+    final updatedUser = await userRepo.update(
+      userUpdate.copyWith(name: 'Novo Nome'),
+    );
+    print('Usuário atualizado: id ${userUpdate.id}\n');
+  }
 
   // DELETE
   //await userRepo.delete(newUser.id);

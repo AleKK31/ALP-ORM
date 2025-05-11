@@ -30,9 +30,11 @@ Usamos `source_gen` e `analyzer` para:
 
 ## Exemplo de Uso
 
-```dart
-// Veja exemplo em test/example
-```
+1. Definição de entidades
+   > test/example/user.dart
+
+2. Operações
+   > test/dart_supabase_orm_test.dart
 
 ## Comandos
 

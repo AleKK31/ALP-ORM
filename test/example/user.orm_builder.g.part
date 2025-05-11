@@ -28,6 +28,16 @@ class AppUserRepository {
     return AppUser.fromJson(data as Map<String, dynamic>);
   }
 
+  Future<AppUser> update(AppUser entity) async {
+    final data = await _client
+        .from('users')
+        .update(entity.toJson())
+        .eq('id', entity.id!)
+        .select()
+        .single();
+    return AppUser.fromJson(data as Map<String, dynamic>);
+  }
+
   Future<void> delete(dynamic id) async {
     await _client.from('users').delete().eq('id', id);
   }

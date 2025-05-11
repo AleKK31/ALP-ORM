@@ -106,6 +106,16 @@ class OrmGenerator extends GeneratorForAnnotation<Entity> {
         final data = await _client.from('$tableName').insert(entity.toJson()).select().single();
         return ${className}.fromJson(data as Map<String, dynamic>);
       }
+
+      Future<${className}> update(${className} entity) async {
+      final data = await _client
+        .from('$tableName')
+        .update(entity.toJson())
+        .eq('${primaryKey?.columnName}', entity.${primaryKey?.name}!)
+        .select()
+        .single();
+      return ${className}.fromJson(data as Map<String, dynamic>);
+    }
       
       Future<void> delete(dynamic id) async {
         await _client.from('$tableName').delete().eq('${primaryKey?.columnName}', id);

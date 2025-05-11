@@ -13,6 +13,14 @@ class AppUser {
 
   AppUser({this.id, required this.name, required this.email});
 
+  AppUser copyWith({int? id, String? name, String? email}) {
+    return AppUser(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+    );
+  }
+
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
       id: json['id'] as int? ?? 0,
